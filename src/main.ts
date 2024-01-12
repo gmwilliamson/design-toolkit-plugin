@@ -165,10 +165,8 @@ export default function () {
       }
       
       // Remove the initial 'Page 1' that isn't required any longer
-      //let initialPage = figma.root.children[0];
-      //if (initialPage.name === 'Page 1') {
-      //  initialPage.remove();
-      //}
+      let initialPage = figma.root.children[0];
+      initialPage.remove();
   
       figma.closePlugin("Design Toolkit template applied");
     } catch (error) {
@@ -178,6 +176,6 @@ export default function () {
   });
   showUI({
     width: 320,
-    height: 320,
+    height: 228,
   });
 }

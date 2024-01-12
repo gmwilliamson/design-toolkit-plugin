@@ -43,7 +43,7 @@ function Plugin() {
             <Text bold>Documentation</Text>
             <Inline space="medium">
               <Text>
-                <a href="https://github.com/NoWorries/toolkit-figma-plugin" target="_blank">
+                <a href="https://github.com/gmwilliamson/design-toolkit-plugin" target="_blank">
                   Github
                 </a>
               </Text>
