@@ -139,28 +139,36 @@ export default function () {
       console.log("%cPages built", "color:green");
   
       // Switch to page called "Cover"
-      const coverPage = createdPages.filter((page) => page.name === "Cover")[0];
-      if (coverPage) {
-        figma.currentPage = coverPage;
+      const coverPage = createdPages.filter((page) => page.name === "-- 📔 cover --")[0];
+      figma.currentPage = coverPage;
           
-        // Insert Cover component instance
-        if (coverComponent) {
-          const coverInstance : InstanceNode = (coverComponent as ComponentNode).createInstance();
-    
-          // Set the page to zoom to fit the cover instance
-          figma.viewport.scrollAndZoomIntoView([coverInstance]);
-    
-          console.log("%cCover inserted", "color:green");
-        } else {
-          console.error ("Cover component not found");
+      // Insert Cover component instance
+      if (coverComponent) {
+        const coverInstance : InstanceNode = (coverComponent as ComponentNode).createInstance();
+        // Set the page to zoom to fit the cover instance
+        figma.viewport.scrollAndZoomIntoView([coverInstance]);
+        const frame = figma.createFrame();
+        frame.resize(coverInstance.width, coverInstance.height);
+        frame.name = "cover";
+        frame.appendChild(coverInstance);
+        coverInstance.x = 0;
+        coverInstance.y = 0;
+        try {
+          await figma.setFileThumbnailNodeAsync(frame);
+          console.log ("%cThumbnail set successfully", "color:green");
+        } catch (error) {
+          console.error("Error setting the file thumbnail:", error);  
         }
+        console.log("%cCover inserted", "color:green");
+      } else {
+        console.error ("Cover component not found");
       }
-
+      
       // Remove the initial 'Page 1' that isn't required any longer
-      let initialPage = figma.root.children[0];
-      if (initialPage.name === 'Page 1') {
-        initialPage.remove();
-      }
+      //let initialPage = figma.root.children[0];
+      //if (initialPage.name === 'Page 1') {
+      //  initialPage.remove();
+      //}
   
       figma.closePlugin("Design Toolkit template applied");
     } catch (error) {
