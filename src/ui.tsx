@@ -11,7 +11,6 @@ import {
   VerticalSpace,
 } from "@create-figma-plugin/ui";
 import { emit } from "@create-figma-plugin/utilities";
-
 import { h } from 'preact'
 import { useCallback, useState } from "preact/hooks";
 
@@ -25,7 +24,7 @@ function Plugin() {
   return (
     <Container style="padding: 0">
       <Banner icon={<IconMegaphone32 />}>
-      Welcome to the Design Toolkit plugin
+      Welcome to Qualio's Design Toolkit plugin
     </Banner>
       <Container>
         <VerticalSpace space="large" />
@@ -45,36 +44,7 @@ function Plugin() {
             <Inline space="medium">
               <Text>
                 <a href="https://github.com/NoWorries/toolkit-figma-plugin" target="_blank">
-                  🌐 Storybook
-                </a>
-              </Text>
-              <Text>
-                <a
-                  href="https://github.com/NoWorries/toolkit-figma-plugin"
-                  target="_blank"
-                >
-                  🌐 Documentation
-                </a>
-              </Text>
-            </Inline>
-          </Stack>
-          <Stack space="medium">
-            <Text bold>Design Support</Text>
-            <Inline space="medium">
-              <Text>
-                <a
-                  href="https://github.com/NoWorries/toolkit-figma-plugin"
-                  target="_blank"
-                >
-                  🌐 Social channel
-                </a>
-              </Text>
-              <Text>
-                <a
-                  href="https://github.com/NoWorries/toolkit-figma-plugin"
-                  target="_blank"
-                >
-                  🌐 Jira
+                  Github
                 </a>
               </Text>
             </Inline>
