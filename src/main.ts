@@ -14,120 +14,95 @@ export default async function () {
   once<CreatePageHandler>("CREATE_PAGES", function () {
     // This is the list of pages to create in your document.
     const pages = [
-      { name: "Cover", node: "PAGE", title: "Cover" },
       {
-        name: "🤔 About",
-        node: "PAGE",
-        title: "About",
-        description: "Project overview",
+        name: "-- 📔 cover --",
+        node: "PAGE", 
       },
       {
-        name: "💻 Prototype",
+        name: "---------------------------------------------------------------",
         node: "PAGE",
-        title: "Prototype",
-        description: "Interactive prototype",
       },
       {
-        name: "✅ Ready for dev",
+        name: "--  🟢 shipped  --",
         node: "PAGE",
-        title: "Ready for dev",
-        description: "Approved designs, ready for development",
-      },
-      { name: "--------", node: "PAGE" },
-      {
-        name: "✏️ Copy review",
-        node: "PAGE",
-        title: "Copy review",
-        description: "Content for review and sign off",
       },
       {
-        name: "[Date] Design review",
+        name: " ",
         node: "PAGE",
-        title: "Design review",
-        description: "[Date]",
       },
       {
-        name: "[Date] Feature/component",
+        name: "--  🪲 bugs  --",
         node: "PAGE",
-        title: "Feature/component",
-        description: "[Date]",
-      },
-      { name: "--------", node: "PAGE" },
-      {
-        name: "💡 Work in progress",
-        node: "PAGE",
-        title: "Work in progress",
-        description:
-          "Explorations and work in progress, not ready for development",
-      },
-      { name: "--------", node: "PAGE" },
-      {
-        name: "🎨 Design research",
-        node: "PAGE",
-        title: "Design research",
-        description:
-          "Collected research artefacts and data from existing resources",
       },
       {
-        name: "👩🏽‍💻 User research",
+        name: " ",
         node: "PAGE",
-        title: "User research",
-        description: "Generative field research",
       },
       {
-        name: "Workshop",
+        name: "--  👾 ready-for-development  --",
         node: "PAGE",
-        title: "Workshop",
-        description: "Artefacts for workshop activity",
       },
       {
-        name: "Flows",
+        name: " ",
         node: "PAGE",
-        title: "Flows",
-        description: "Journey flows and logic",
+      },
+      {
+        name: "--  🖌️ in-progress  --",
+        node: "PAGE",
+      },
+      {
+        name: "        ⮑  untitled-page",
+        node: "PAGE",
+      },
+      {
+        name: " ",
+        node: "PAGE",
+      },
+      {
+        name: "--  🛑 parked  --",
+        node: "PAGE",
+      },
+      {
+        name: " ",
+        node: "PAGE",
+      },
+      {
+        name: "--  🔦 exploration  --",
+        node: "PAGE",
+      },
+      {
+        name: " ",
+        node: "PAGE",
+      },
+      {
+        name: "--  🎥 prototypes  --",
+        node: "PAGE",
+      },
+      {
+        name: " ",
+        node: "PAGE",
+      },
+      {
+        name: "---------------------------------------------------------------",
+        node: "PAGE",
+      },
+      {
+        name: "--  🗂️ archive  --",
+        node: "PAGE",
+      },
+      {
+        name: "--  🛝 playground  --",
+        node: "PAGE",
+      },
+      {
+        name: "--  🧩 local-components  --",
+        node: "PAGE",
       },
     ];
 
     // Show a notification
 
-    figma.notify("Building template", { timeout: Infinity });
-
-    // Load any custom fonts required for editing text layers.
-    // Figma developer console will advise you if you need to include any missing fonts.
-
-    async function loadFont() {
-      figma.loadFontAsync({ family: "Work Sans", style: "Bold" });
-      figma.loadFontAsync({ family: "Open Sans", style: "Regular" });
-      figma.loadFontAsync({ family: "Open Sans", style: "SemiBold" });
-    }
-
-    function insertTitle(pageName: string) {
-      let matchPage = pages.filter((page) => page.name === pageName)[0];
-      if (matchPage.title == null) {
-        console.error("No title added on: " + matchPage.name);
-      } else {
-        if (pageTitleComponent) {
-          let titleInstance: InstanceNode = pageTitleComponent.createInstance();
-
-          let replaceTitle: any = titleInstance.findOne(
-            (n) => n.name === "pageTitle" && n.type === "TEXT"
-          );
-
-          if (replaceTitle && replaceTitle.type === "TEXT") {
-            replaceTitle.characters = matchPage.title;
-          }
-
-          let replaceDescription: any = titleInstance.findOne(
-            (n) => n.name === "pageDescription" && n.type === "TEXT"
-          );
-
-          if (replaceDescription && replaceDescription.type === "TEXT") {
-            replaceDescription.characters = matchPage.description;
-          }
-          figma.viewport.scrollAndZoomIntoView([titleInstance]);
-        }
-      }
-    }
+    figma.notify("Building template...", { timeout: Infinity });
 
     // Setup your components for import into pages
 
@@ -135,38 +110,17 @@ export default async function () {
     let coverComponent: ComponentNode | null = null;
 
     async function getCoverComponent() {
-      const coverComponentKey = "INSERT_COVER_KEY_HERE"; // Replace this with the Key for your cover component.
+      const coverComponentKey = "9b9769be8f444037e00f8e6744467ae88c909aa7"; // Replace this with the Key for your cover component.
       const instance = await figma.importComponentByKeyAsync(coverComponentKey);
       coverComponent = instance;
-    }
-
-    // Title component
-    let pageTitleComponent: ComponentNode | null = null;
-
-    async function getPageTitleComponent() {
-      const pageTitleComponentKey = "INSERT_TITLE_KEY_HERE"; // Replace this with the Key for your title component.
-      const instance = await figma.importComponentByKeyAsync(pageTitleComponentKey);
-      pageTitleComponent = instance;
-    }
-
-    // Example of a component to be imported
-    let exampleComponent: ComponentNode | null = null;
-
-    async function getExampleComponent() {
-      const exampleComponentKey = "INSERT_EXAMPLE_KEY_HERE"; // This is an example component, use this block as a reference when for importing additional components
-      const instance = await figma.importComponentByKeyAsync(exampleComponentKey);
-      exampleComponent = instance;
     }
 
     // The following section is contained within a Promise, which means it only runs when the above components and fonts are available.
 
     Promise.all([
       getCoverComponent(),
-      getPageTitleComponent(),
-      getExampleComponent(),
-      loadFont(),
     ]).then(() => {
-      console.log("%cFonts and components loaded", "color:green");
+      console.log("%Components loaded", "color:green");
 
       // This forEach loop goes through the list of pages and creates each one using the 'name' values.
       let createdPages: PageNode[] = []
@@ -175,7 +129,6 @@ export default async function () {
         newPage.name = page.name;
         if (newPage.name !== 'Cover') {
           figma.currentPage = newPage;
-          insertTitle(page.name);
         }
         createdPages.push(newPage) // Inserts the heading component from library if there is a "title" value in your pages array.
       });
@@ -190,107 +143,11 @@ export default async function () {
       if (coverComponent) {
         const coverInstance: InstanceNode = coverComponent.createInstance();
 
-        // Find the text layer called "Title" and replaces it with the value of titleText.
-        const titleText = "Title";
-
-        const coverTitle = coverInstance.findOne(
-          (n) => n.name === "title" && n.type === "TEXT"
-        );
-        if (coverTitle && coverTitle.type === "TEXT") {
-          coverTitle.characters = titleText;
-        }
-
-        // Find the text layer called "description" and replaces it with the value of descriptionText.
-        const descriptionText = "Enter a description for this file.";
-
-        const coverDescription = coverInstance.findOne(
-          (n) => n.name === "description" && n.type === "TEXT"
-        );
-        if (coverDescription && coverDescription.type === "TEXT") {
-          coverDescription.characters = descriptionText;
-        }
-        // Find the text layer called 'userName' and replaces it with the value of authorName.
-        if(figma.currentUser) {
-          const authorName = figma.currentUser.name;
-          const coverAuthor = coverInstance.findOne(
-            (n) => n.name === "userName" && n.type === "TEXT"
-          );
-          if (coverAuthor && coverAuthor.type === "TEXT") {
-            coverAuthor.characters = authorName;
-          }
-        }
-
-        // Get the current month and year, if you'd like a date stamp on your cover
-        let monthIndex: number = new Date().getMonth();
-        let yearIndex: number = new Date().getFullYear();
-        const month: number = monthIndex; // 1 for Jan, 2 for Feb
-        const year: number = yearIndex; // 1 for Jan, 2 for Feb
-        const monthNames: Array<string> = [
-          "January",
-          "February",
-          "March",
-          "April",
-          "May",
-          "June",
-          "July",
-          "August",
-          "September",
-          "October",
-          "November",
-          "December",
-        ];
-
-        // Find the text layer called 'dateCreated' and replaces it with the month and year.
-        const coverDate = coverInstance.findOne(
-          (n) => n.name === "dateCreated" && n.type === "TEXT"
-        );
-        if (coverDate && coverDate.type === "TEXT") {
-          coverDate.characters = monthNames[month] + " " + year;
-        }
-
-        // Change the background colour of the cover page, perfect for making a seamless cover image in Figma.
-        // Colours must be converted to RGB format.
-
-        figma.currentPage.backgrounds = [
-          {
-            type: "SOLID",
-            color: {
-              r: 1,
-              g: 1,
-              b: 1,
-            },
-          },
-        ];
-
         // Set the page to zoom to fit the cover instance
         figma.viewport.scrollAndZoomIntoView([coverInstance]);
 
         console.log("%cCover inserted", "color:green");
       }
-
-      // Insert Example component
-      const pageExample = createdPages.filter((page) => page.name === "🤔 About")[0]; // Choose the page to insert component on
-      figma.currentPage = pageExample; // Switch to that page
-
-      if (exampleComponent) {
-        const exampleInstance = exampleComponent.createInstance(); // Insert the example component
-
-        exampleInstance.y = 500; // Move it down below the heading
-        var exampleInstanceWidth = 3000; // Define a new width
-        var exampleInstanceHeight = 2000; // Define a new height
-        exampleInstance.resize(exampleInstanceWidth, exampleInstanceHeight); // Resize the component
-
-        let newSelection = figma.currentPage.findChildren(
-          (n) => n.type === "INSTANCE"
-        );
-
-        figma.currentPage.selection = newSelection;
-        figma.viewport.scrollAndZoomIntoView(newSelection);
-        figma.currentPage.selection = [];
-      }
-
-      // Go back to the Cover page
-      figma.currentPage = coverPage;
 
       // Remove the initial 'Page 1' that isn't required any longer
       let initialPage = figma.root.children[0];
