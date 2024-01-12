@@ -6,12 +6,12 @@ import {
 
 import { CreatePageHandler } from "./types";
 
-export default async function () {
+export default function () {
   setRelaunchButton(figma.currentPage, "designToolkit", {
     description: "Useful tools and links",
   });
 
-  once<CreatePageHandler>("CREATE_PAGES", function () {
+  once<CreatePageHandler>("CREATE_PAGES", async function () {
     // This is the list of pages to create in your document.
     const pages = [
       {
@@ -111,50 +111,62 @@ export default async function () {
 
     async function getCoverComponent() {
       const coverComponentKey = "9b9769be8f444037e00f8e6744467ae88c909aa7"; // Replace this with the Key for your cover component.
-      const instance = await figma.importComponentByKeyAsync(coverComponentKey);
-      coverComponent = instance;
+      try {
+        const instance = await figma.importComponentByKeyAsync(coverComponentKey);
+        if (instance && instance.type === "COMPONENT") {
+          coverComponent = instance as ComponentNode;
+          console.log("Cover component set successfully");
+        } else {
+          console.error("Cover component not found or invalid type");
+        }
+      } catch (error) {
+        console.error("Error importing cover component:", error);
+      }  
     }
 
-    // The following section is contained within a Promise, which means it only runs when the above components and fonts are available.
-
-    Promise.all([
-      getCoverComponent(),
-    ]).then(() => {
+    try {
+      await getCoverComponent();
       console.log("%Components loaded", "color:green");
-
+  
       // This forEach loop goes through the list of pages and creates each one using the 'name' values.
-      let createdPages: PageNode[] = []
+      let createdPages: PageNode[] = [];
       pages.forEach((page) => {
         const newPage = figma.createPage();
         newPage.name = page.name;
-        if (newPage.name !== 'Cover') {
-          figma.currentPage = newPage;
-        }
-        createdPages.push(newPage) // Inserts the heading component from library if there is a "title" value in your pages array.
+        createdPages.push(newPage);
       });
-
+  
       console.log("%cPages built", "color:green");
-
+  
       // Switch to page called "Cover"
       const coverPage = createdPages.filter((page) => page.name === "Cover")[0];
-      figma.currentPage = coverPage;
-
-      // Insert Cover component instance
-      if (coverComponent) {
-        const coverInstance: InstanceNode = coverComponent.createInstance();
-
-        // Set the page to zoom to fit the cover instance
-        figma.viewport.scrollAndZoomIntoView([coverInstance]);
-
-        console.log("%cCover inserted", "color:green");
+      if (coverPage) {
+        figma.currentPage = coverPage;
+          
+        // Insert Cover component instance
+        if (coverComponent) {
+          const coverInstance : InstanceNode = (coverComponent as ComponentNode).createInstance();
+    
+          // Set the page to zoom to fit the cover instance
+          figma.viewport.scrollAndZoomIntoView([coverInstance]);
+    
+          console.log("%cCover inserted", "color:green");
+        } else {
+          console.error ("Cover component not found");
+        }
       }
 
       // Remove the initial 'Page 1' that isn't required any longer
       let initialPage = figma.root.children[0];
-      initialPage.remove();
-
+      if (initialPage.name === 'Page 1') {
+        initialPage.remove();
+      }
+  
       figma.closePlugin("Design Toolkit template applied");
-    });
+    } catch (error) {
+      console.error("Error building template:", error);
+      figma.notify("Error building template");
+    }
   });
   showUI({
     width: 320,

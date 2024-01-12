@@ -24,7 +24,7 @@ function Plugin() {
   return (
     <Container style="padding: 0">
       <Banner icon={<IconMegaphone32 />}>
-      Welcome to Qualio's Design Toolkit plugin
+      Welcome to Qualio's Design Toolkit plugin!
     </Banner>
       <Container>
         <VerticalSpace space="large" />
