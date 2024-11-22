@@ -19,11 +19,11 @@ export default function () {
         node: "PAGE", 
       },
       {
-        name: "---------------------------------------------------------------",
+        name: " ",
         node: "PAGE",
       },
       {
-        name: "--  🟢 shipped  --",
+        name: "--  shipped  --",
         node: "PAGE",
       },
       {
@@ -47,11 +47,15 @@ export default function () {
         node: "PAGE",
       },
       {
-        name: "--  🖌️ in-progress  --",
+        name: "--  🧐 ready-for-review  --",
         node: "PAGE",
       },
       {
-        name: "        ⮑  untitled-page",
+        name: " ",
+        node: "PAGE",
+      },
+      {
+        name: "--  🖌️ in-progress  --",
         node: "PAGE",
       },
       {
@@ -126,8 +130,10 @@ export default function () {
 
     try {
       await getCoverComponent();
-      console.log("%Components loaded", "color:green");
-  
+      console.log("Components loaded");
+      
+      const initialPage = figma.root.children[0];
+
       // This forEach loop goes through the list of pages and creates each one using the 'name' values.
       let createdPages: PageNode[] = [];
       pages.forEach((page) => {
@@ -136,37 +142,52 @@ export default function () {
         createdPages.push(newPage);
       });
   
-      console.log("%cPages built", "color:green");
+      console.log("Pages built");
   
       // Switch to page called "Cover"
       const coverPage = createdPages.filter((page) => page.name === "-- 📔 cover --")[0];
+      if (!coverPage) {
+        throw new Error("Cover page not found in created pages");
+      }
       figma.currentPage = coverPage;
           
       // Insert Cover component instance
       if (coverComponent) {
-        const coverInstance : InstanceNode = (coverComponent as ComponentNode).createInstance();
-        // Set the page to zoom to fit the cover instance
-        figma.viewport.scrollAndZoomIntoView([coverInstance]);
+        // Create frame first
         const frame = figma.createFrame();
-        frame.resize(coverInstance.width, coverInstance.height);
         frame.name = "cover";
+        
+        //Create instance and add to frame
+        const coverInstance : InstanceNode = (coverComponent as ComponentNode).createInstance();
         frame.appendChild(coverInstance);
+
+        // Set instance position
         coverInstance.x = 0;
         coverInstance.y = 0;
+
+        // REsize frame to match instance
+        frame.resize(coverInstance.width, coverInstance.height);
+
+        // Set viewport
+        figma.viewport.scrollAndZoomIntoView([coverInstance]);
+
+        // Set thumbnail
         try {
           await figma.setFileThumbnailNodeAsync(frame);
-          console.log ("%cThumbnail set successfully", "color:green");
+          console.log ("Thumbnail set successfully");
         } catch (error) {
           console.error("Error setting the file thumbnail:", error);  
         }
-        console.log("%cCover inserted", "color:green");
+
+        console.log("Cover inserted");
       } else {
         console.error ("Cover component not found");
       }
       
-      // Remove the initial 'Page 1' that isn't required any longer
-      let initialPage = figma.root.children[0];
-      initialPage.remove();
+      // Remove the initial page only after everything else is done
+      if (initialPage) {
+        initialPage.remove();
+      }
   
       figma.closePlugin("Design Toolkit template applied");
     } catch (error) {
