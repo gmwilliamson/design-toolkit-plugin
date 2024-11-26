@@ -7,7 +7,7 @@
   "devDependencies": {
     "@create-figma-plugin/build": "^1.8.3",
     "@create-figma-plugin/tsconfig": "^1.8.3",
-    "@figma/plugin-typings": "1.42.1",
+    "@figma/plugin-typings": "^1.42.1",
     "typescript": "^4"
   },
   "scripts": {
@@ -28,6 +28,8 @@
         "ui": "src/ui.tsx"
       }
     },
-    "permissions": ["currentuser"]
+    "permissions": [
+      "currentuser"
+    ]
   }
 }

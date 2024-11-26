@@ -21,22 +21,7 @@ export default function () {
       {
         name: " ",
         node: "PAGE",
-      },
-      {
-        name: "--  shipped  --",
-        node: "PAGE",
-      },
-      {
-        name: " ",
-        node: "PAGE",
-      },
-      {
-        name: "--  🪲 bugs  --",
-        node: "PAGE",
-      },
-      {
-        name: " ",
-        node: "PAGE",
+        isPageDivider: "true"
       },
       {
         name: "--  👾 ready-for-development  --",
@@ -45,6 +30,7 @@ export default function () {
       {
         name: " ",
         node: "PAGE",
+        isPageDivider: "true"
       },
       {
         name: "--  🧐 ready-for-review  --",
@@ -53,6 +39,7 @@ export default function () {
       {
         name: " ",
         node: "PAGE",
+        isPageDivider: "true"
       },
       {
         name: "--  🖌️ in-progress  --",
@@ -61,6 +48,7 @@ export default function () {
       {
         name: " ",
         node: "PAGE",
+        isPageDivider: "true"
       },
       {
         name: "--  🛑 parked  --",
@@ -69,6 +57,7 @@ export default function () {
       {
         name: " ",
         node: "PAGE",
+        isPageDivider: "true"
       },
       {
         name: "--  🔦 exploration  --",
@@ -77,6 +66,7 @@ export default function () {
       {
         name: " ",
         node: "PAGE",
+        isPageDivider: "true"
       },
       {
         name: "--  🎥 prototypes  --",
@@ -85,10 +75,7 @@ export default function () {
       {
         name: " ",
         node: "PAGE",
-      },
-      {
-        name: "---------------------------------------------------------------",
-        node: "PAGE",
+        isPageDivider: "true"
       },
       {
         name: "--  🗂️ archive  --",
@@ -105,90 +92,80 @@ export default function () {
     ];
 
     // Show a notification
-
     figma.notify("Building template...", { timeout: Infinity });
 
-    // Setup your components for import into pages
-
-    // Cover component
-    let coverComponent: ComponentNode | null = null;
-
-    async function getCoverComponent() {
-      const coverComponentKey = "9b9769be8f444037e00f8e6744467ae88c909aa7"; // Replace this with the Key for your cover component.
-      try {
-        const instance = await figma.importComponentByKeyAsync(coverComponentKey);
-        if (instance && instance.type === "COMPONENT") {
-          coverComponent = instance as ComponentNode;
-          console.log("Cover component set successfully");
-        } else {
-          console.error("Cover component not found or invalid type");
-        }
-      } catch (error) {
-        console.error("Error importing cover component:", error);
-      }  
-    }
-
     try {
-      await getCoverComponent();
-      console.log("Components loaded");
-      
-      const initialPage = figma.root.children[0];
-
-      // This forEach loop goes through the list of pages and creates each one using the 'name' values.
+      // Create all new pages first
       let createdPages: PageNode[] = [];
-      pages.forEach((page) => {
+      for (const page of pages) {
         const newPage = figma.createPage();
         newPage.name = page.name;
         createdPages.push(newPage);
-      });
-  
+      }
+      
       console.log("Pages built");
-  
-      // Switch to page called "Cover"
-      const coverPage = createdPages.filter((page) => page.name === "-- 📔 cover --")[0];
+
+      // Find and switch to cover page first
+      const coverPage = createdPages.find((page) => page.name === "-- 📔 cover --");
       if (!coverPage) {
         throw new Error("Cover page not found in created pages");
       }
-      figma.currentPage = coverPage;
-          
-      // Insert Cover component instance
+      await figma.setCurrentPageAsync(coverPage);
+
+      // Import and set up cover component
+      const coverComponentKey = "9b9769be8f444037e00f8e6744467ae88c909aa7";
+      let coverComponent: ComponentNode | null = null;
+      
+      try {
+        const component = await figma.importComponentByKeyAsync(coverComponentKey);
+        if (component && component.type === "COMPONENT") {
+          coverComponent = component;
+          console.log("Cover component imported successfully");
+        } else {
+          throw new Error("Invalid cover component type");
+        }
+      } catch (error) {
+        console.error("Error importing cover component:", error);
+        throw error;
+      }
+
       if (coverComponent) {
-        // Create frame first
+        // Create frame
         const frame = figma.createFrame();
         frame.name = "cover";
         
-        //Create instance and add to frame
-        const coverInstance : InstanceNode = (coverComponent as ComponentNode).createInstance();
+        // Create instance and add to frame
+        const coverInstance = coverComponent.createInstance();
         frame.appendChild(coverInstance);
 
         // Set instance position
         coverInstance.x = 0;
         coverInstance.y = 0;
 
-        // REsize frame to match instance
+        // Resize frame to match instance
         frame.resize(coverInstance.width, coverInstance.height);
 
         // Set viewport
-        figma.viewport.scrollAndZoomIntoView([coverInstance]);
+        figma.viewport.scrollAndZoomIntoView([frame]);
 
         // Set thumbnail
         try {
           await figma.setFileThumbnailNodeAsync(frame);
-          console.log ("Thumbnail set successfully");
+          console.log("Thumbnail set successfully");
         } catch (error) {
-          console.error("Error setting the file thumbnail:", error);  
+          console.error("Error setting the file thumbnail:", error);
+          throw error;
         }
 
         console.log("Cover inserted");
-      } else {
-        console.error ("Cover component not found");
       }
-      
-      // Remove the initial page only after everything else is done
-      if (initialPage) {
+
+      // Only remove the initial page after everything is properly set up
+      const initialPage = figma.root.children[0];
+      if (initialPage && initialPage !== coverPage) {
         initialPage.remove();
       }
-  
+
       figma.closePlugin("Design Toolkit template applied");
     } catch (error) {
       console.error("Error building template:", error);
