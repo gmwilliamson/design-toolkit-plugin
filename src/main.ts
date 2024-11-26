@@ -15,10 +15,6 @@ export default function () {
     // This is the list of pages to create in your document.
     const pages = [
       {
-        name: "-- 📔 cover --",
-        node: "PAGE", 
-      },
-      {
         name: " ",
         node: "PAGE",
         isPageDivider: "true"
@@ -95,7 +91,11 @@ export default function () {
     figma.notify("Building template...", { timeout: Infinity });
 
     try {
-      // Create all new pages first
+      // Get the initial page (Page 1) and rename it to cover
+      const initialPage = figma.root.children[0];
+      initialPage.name = "-- 📔 cover --";
+      
+      // Create the rest of the pages
       let createdPages: PageNode[] = [];
       for (const page of pages) {
         const newPage = figma.createPage();
@@ -105,12 +105,8 @@ export default function () {
       
       console.log("Pages built");
 
-      // Find and switch to cover page first
-      const coverPage = createdPages.find((page) => page.name === "-- 📔 cover --");
-      if (!coverPage) {
-        throw new Error("Cover page not found in created pages");
-      }
-      await figma.setCurrentPageAsync(coverPage);
+      // Switch to the cover page (former Page 1)
+      await figma.setCurrentPageAsync(initialPage);
 
       // Import and set up cover component
       const coverComponentKey = "9b9769be8f444037e00f8e6744467ae88c909aa7";
@@ -158,12 +154,6 @@ export default function () {
         }
 
         console.log("Cover inserted");
-      }
-
-      // Only remove the initial page after everything is properly set up
-      const initialPage = figma.root.children[0];
-      if (initialPage && initialPage !== coverPage) {
-        initialPage.remove();
       }
 
       figma.closePlugin("Design Toolkit template applied");
